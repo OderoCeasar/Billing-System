@@ -62,7 +62,7 @@ func (s *Session) BeforeCreate(tx *gorm.DB) error {
 }
 
 
-func (s *Session) isExpired() bool {
+func (s *Session) IsExpired() bool {
 	return time.Now().After(s.ExpiresAt)
 }
 
