@@ -9,7 +9,7 @@ import (
 	"github.com/OderoCeasar/system/db/repositories"
 	"github.com/OderoCeasar/system/services"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/OderoCeasar/system/database"
 )
 
 func main() {
