@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/OderoCeasar/system/config"
 	"github.com/OderoCeasar/system/db/models"
 	"github.com/OderoCeasar/system/db/repositories"
@@ -74,7 +73,7 @@ func (s *RADIUSService) AuthenticateUser(username, password string) (bool, *mode
 func (s *RADIUSService) AccountingStart(sessionID, username, nasIP, nasPort, userIP, macAddress string) error {
 	user, err := s.userRepo.FindByUsername(username)
 	if err != nil {
-		user, err := s.userRepo.FindByPhoneNumber(username)
+		user, err = s.userRepo.FindByPhoneNumber(username)
 		if err != nil {
 			return fmt.Errorf("user not found")
 		}
