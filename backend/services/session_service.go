@@ -174,6 +174,6 @@ func (s *SessionService) ListActiveSessions() ([]models.Session, error) {
 }
 
 // list user sessions
-func (s *SessionService) ListUserSession(userID uuid.UUID, limit, offset int) ([]models.Session, error) {
+func (s *SessionService) ListUserSessions(userID uuid.UUID, limit, offset int) ([]models.Session, error) {
 	return s.sessionRepo.ListByUser(userID, limit, offset)
 }

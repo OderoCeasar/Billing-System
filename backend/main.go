@@ -1,63 +1,46 @@
 package main
 
 import (
-	"log"
-
-	"github.com/OderoCeasar/system/api/handlers"
+	"github.com/OderoCeasar/system/api/routes"
 	"github.com/OderoCeasar/system/config"
-	"github.com/OderoCeasar/system/db/models"
-	"github.com/OderoCeasar/system/db/repositories"
-	"github.com/OderoCeasar/system/services"
+	"github.com/OderoCeasar/system/db"
+	"github.com/OderoCeasar/system/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/OderoCeasar/system/database"
 )
 
 func main() {
+	utils.InitLogger()
+	logger := utils.GetLogger()
+
 	cfg := config.Load()
+	logger.Info("Configuration loaded successfully")
 
-	if err := database.Connect(cfg); err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+	if err := db.Connect(cfg); err != nil {
+		logger.Fatal("Failed to connect to database: " + err.Error())
+	}
+	logger.Info("Database connected successfully")
+
+	if err := db.AutoMigrate(); err != nil {
+		logger.Fatal("Failed to migrate the database: " + err.Error())
+	}
+	logger.Info("Database migration completed")
+
+	// setup GIN
+	if cfg.Server.GinMode == "release" {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
-	db := database.GetDB()
-	if err := db.AutoMigrate(
-		&models.User{},
-		&models.Package{},
-		&models.Payment{},
-		&models.Session{},
-		&models.RADIUSAccount{},
-		&models.RADIUSAccounting{},
-	); err != nil {
-		log.Fatalf("Failed to migrate database: %v", err)
-	}
+	r := gin.New()
+	r.Use(gin.Recovery())
 
-	// initialize repositories
-	userRepo := repositories.NewUserRepository(db)
-	packageRepo := repositories.NewPackageRepository(db)
-	paymentRepo := repositories.NewPaymentRepository(db)
-	sessionRepo := repositories.NewSessionRepository(db)
+	// routes
+	routes.SetupRoutes(r, cfg)
+	logger.Info("Routes configured successfully")
 
+	addr := ":" + cfg.Server.Port
+	logger.Info("Server starting on " + addr)
 
-	// initialize service
-	authService := services.NewAuthService(userRepo, cfg)
-	paymentService := services.NewPaymentService(paymentRepo, packageRepo, userRepo, cfg)
-	sessionService := services.NewSessionService(sessionRepo, packageRepo, paymentRepo)
-
-
-	// initialize handlers
-	authHandler := handlers.NewAuthHandler(authService)
-	packageHandler := handlers.NewPackageHandler(packageRepo)
-	paymentHandler := handlers.NewPaymentHandler(paymentService, sessionService)
-	sessionHandler := handlers.NewSessionHandler(sessionService)
-
-
-	gin.SetMode(cfg.Server.GinMode)
-	r := gin.Default()
-
-	routes.SetUpRoutes(r, authService, authHandler, packageHandler, paymentHandler, sessionHandler, cfg.Server.FrontendURL)
-
-	log.Printf("Server starting on port %s", cfg.Server.Port)
-	if err := r.Run(":" + cfg.Server.Port); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	if err := r.Run(addr); err != nil {
+		logger.Fatal("Failed to start server: " + err.Error())
 	}
 }

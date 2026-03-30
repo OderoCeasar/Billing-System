@@ -31,7 +31,7 @@ func NewAuthService(userRepo *repositories.UserRepository, cfg *config.Config) *
 
 
 type Claims struct {
-	userID		uuid.UUID	`json:"user_id"`
+	UserID		uuid.UUID	`json:"user_id"`
 	PhoneNumber	string		`json:"phone_number"`
 	IsAdmin		bool		`json:"is_admin"`
 	jwt.RegisteredClaims
@@ -95,7 +95,7 @@ func (s *AuthService) Login(phoneNumber, password string) (string, *models.User,
 
 func (s *AuthService) GenerateToken(user *models.User) (string, error) {
 	claims := Claims{
-		userID:                 user.ID,
+		UserID:                 user.ID,
 		PhoneNumber: 			user.PhoneNumber,
 		IsAdmin: 				user.IsAdmin,
 		RegisteredClaims: 		jwt.RegisteredClaims{
@@ -163,5 +163,4 @@ func (s *AuthService) QuickRegiter(phoneNumber string) (*models.User, string, er
 	}
 	return user, token, nil
 }
-
 
