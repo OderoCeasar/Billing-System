@@ -47,7 +47,7 @@ func (r *SessionRepository) Update(session *models.Session) error {
 func (r *SessionRepository) ListActive() ([]models.Session, error) {
 	var sessions []models.Session
 	err := r.db.Preload("User").Preload("Package").
-		Where("status = ?", models.SessionStatusActive).
+		Where("status = ?", models.SessionStatusActive).Order("created_at DESC").
 		Find(&sessions).Error
 	return sessions, err
 }
@@ -77,4 +77,16 @@ func (r *SessionRepository) List(limit, offset int) ([]models.Session, error) {
 		Limit(limit).Offset(offset).
 		Find(&sessions).Error
 	return sessions, err
+}
+
+func (r *SessionRepository) CountActive() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Session{}).Where("status = ?", models.SessionStatusActive).Count(&count).Error
+	return count, err	
+}
+
+func (r *SessionRepository) GetTotalDataUsed() (int64, error) {
+	var total int64
+	err := r.db.Model(&models.Session{}).Select("COALESCE(SUM(data_used_bytes), 0)").Scan(&total).Error
+	return total, err
 }

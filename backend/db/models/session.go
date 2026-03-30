@@ -73,3 +73,7 @@ func (s *Session) HasExceededDataLimit() bool {
 func (s *Session) HasExceededTimeLimit() bool {
 	return s.TimeLimitMinutes > 0 && s.TimeUsedMinutes >= s.TimeLimitMinutes
 }
+
+func (Session) TableName() string {
+	return "sessions"
+}

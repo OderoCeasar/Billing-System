@@ -49,3 +49,9 @@ func (r *UserRepository) List(limit, offset int) ([]models.User, error) {
 	err := r.db.Limit(limit).Offset(offset).Find(&users).Error
 	return users, err
 }
+
+func (r *UserRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.User{}).Count(&count).Error
+	return count, err
+}

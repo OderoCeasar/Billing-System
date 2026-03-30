@@ -2,9 +2,9 @@ package db
 
 import (
 	"fmt"
-	"log"
-
+	
 	"github.com/OderoCeasar/system/config"
+	"github.com/OderoCeasar/system/db/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -35,8 +35,16 @@ func Connect(cfg *config.Config) error {
 		return fmt.Errorf("Failed to connect to database: %w", err)
 	}
 
-	log.Println("Database connected successfully")
 	return nil
+}
+
+func AutoMigrate() error {
+	return DB.AutoMigrate(
+		&models.User{},
+		&models.Package{},
+		&models.Payment{},
+		&models.Session{},
+	)
 }
 
 

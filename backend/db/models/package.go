@@ -17,7 +17,7 @@ const (
 )
 
 type Package struct {
-	ID				uuid.UUID  			`gorm:"type:uuid;primary_key;default:gen_random_uuid" json:"id"`
+	ID				uuid.UUID  			`gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	Name			string				`gorm:"not null" json:"name"`
 	Description 	string				`json:"description"`
 	PackageType 	PackageType			`gorm:"type:varchar(20);not null" json:"package_type"`
@@ -40,4 +40,8 @@ func (p *Package) BeforeCreate(tx *gorm.DB)	error {
 
 	}
 	return nil
+}
+
+func (Package) TableName() string {
+	return "packages"
 }
