@@ -16,40 +16,68 @@ const formatDuration = (pkg) => {
   return 'Flexible'
 }
 
+const getSpeedLabel = (pkg) => {
+  const up = Number(pkg?.speed_limit_up || 0)
+  const down = Number(pkg?.speed_limit_down || 0)
+  const peak = Math.max(up, down)
+  if (peak > 0) {
+    return `Up to ${peak} Mbps`
+  }
+  return 'High-speed access'
+}
+
 export const PackagesSection = ({
   packages,
   packagesLoading,
   packagesError,
-  onReload,
+  onSelectPackage,
 }) => {
   return (
-    <section id="packages" className="section">
-      <div className="section-title">
-        <div>
-          <h3>Packages</h3>
-          <p>Live prices pulled from your backend.</p>
-        </div>
-        <button className="btn ghost" onClick={onReload}>
-          Reload
-        </button>
-      </div>
+    <section id="packages" className="plans-grid">
       {packagesLoading ? (
         <div className="empty">Loading packages...</div>
       ) : packagesError ? (
         <div className="empty error">{packagesError}</div>
       ) : (
-        <div className="grid">
-          {packages.map((pkg) => (
-            <article className="card" key={pkg.id}>
-              <p className="tag">{pkg.package_type?.toUpperCase()}</p>
-              <h4>{pkg.name}</h4>
-              <p className="muted">{pkg.description || 'Unlimited access'}</p>
-              <div className="price-row">
-                <span className="price">Ksh {pkg.price}</span>
-                <span className="duration">{formatDuration(pkg)}</span>
-              </div>
-            </article>
-          ))}
+        <div className="plans">
+          {packages.map((pkg, index) => {
+            const isPopular = index === 1
+            return (
+              <article
+                className={`plan-card${isPopular ? ' popular' : ''}`}
+                key={pkg.id}
+              >
+                {isPopular ? <span className="plan-badge">POPULAR</span> : null}
+                <div className="plan-header">
+                  <h4>{pkg.name}</h4>
+                  <span className="plan-price">
+                    <span className="plan-currency">Ksh</span>
+                    <span className="plan-amount">{pkg.price}</span>
+                  </span>
+                </div>
+                <p className="plan-description">
+                  {pkg.description || 'Unlimited access'}
+                </p>
+                <ul className="plan-features">
+                  <li>
+                    <span className="feature-icon" aria-hidden="true" />
+                    {formatDuration(pkg)} access
+                  </li>
+                  <li>
+                    <span className="feature-icon speed" aria-hidden="true" />
+                    {getSpeedLabel(pkg)}
+                  </li>
+                </ul>
+                <button
+                  className={`btn ${isPopular ? 'primary' : 'ghost'} plan-action`}
+                  type="button"
+                  onClick={() => onSelectPackage?.(pkg)}
+                >
+                  Buy
+                </button>
+              </article>
+            )
+          })}
         </div>
       )}
     </section>

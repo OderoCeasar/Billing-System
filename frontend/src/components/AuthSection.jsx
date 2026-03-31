@@ -5,151 +5,112 @@ export const AuthSection = ({
   authMessage,
   setAuthMessage,
   onLogin,
-  onRegister,
-  onQuickRegister,
   onLogout,
 }) => {
-  const [loginForm, setLoginForm] = useState({
-    phone_number: '',
-    password: '',
-  })
-  const [registerForm, setRegisterForm] = useState({
-    phone_number: '',
-    password: '',
-  })
-  const [quickPhone, setQuickPhone] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
+  const [loginForm, setLoginForm] = useState({ phone_number: '', password: '' })
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
       await onLogin(loginForm)
-    } catch (error) {
-      setAuthMessage(error.message)
-    }
-  }
-
-  const handleRegister = async (event) => {
-    event.preventDefault()
-    try {
-      await onRegister(registerForm)
-    } catch (error) {
-      setAuthMessage(error.message)
-    }
-  }
-
-  const handleQuick = async (event) => {
-    event.preventDefault()
-    try {
-      await onQuickRegister(quickPhone)
+      setIsOpen(false)
     } catch (error) {
       setAuthMessage(error.message)
     }
   }
 
   return (
-    <section className="section" id="auth">
-      <div className="section-title">
-        <div>
-          <h3>Authentication</h3>
-          <p>Register, login, or quick-register via phone number.</p>
-        </div>
-        {token ? (
-          <button className="btn ghost" onClick={onLogout}>
-            Logout
-          </button>
-        ) : null}
-      </div>
-      <div className="columns">
-        <form className="panel" onSubmit={handleLogin}>
-          <h4>Login</h4>
-          <label>
-            Phone Number
-            <input
-              type="tel"
-              value={loginForm.phone_number}
-              onChange={(e) =>
-                setLoginForm((prev) => ({
-                  ...prev,
-                  phone_number: e.target.value,
-                }))
-              }
-              placeholder="07XXXXXXXX"
-            />
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              value={loginForm.password}
-              onChange={(e) =>
-                setLoginForm((prev) => ({
-                  ...prev,
-                  password: e.target.value,
-                }))
-              }
-              placeholder="********"
-            />
-          </label>
-          <button className="btn primary" type="submit">
-            Login
-          </button>
-        </form>
-
-        <form className="panel" onSubmit={handleRegister}>
-          <h4>Register</h4>
-          <label>
-            Phone Number
-            <input
-              type="tel"
-              value={registerForm.phone_number}
-              onChange={(e) =>
-                setRegisterForm((prev) => ({
-                  ...prev,
-                  phone_number: e.target.value,
-                }))
-              }
-              placeholder="07XXXXXXXX"
-            />
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              value={registerForm.password}
-              onChange={(e) =>
-                setRegisterForm((prev) => ({
-                  ...prev,
-                  password: e.target.value,
-                }))
-              }
-              placeholder="Create password"
-            />
-          </label>
-          <button className="btn secondary" type="submit">
-            Create Account
-          </button>
-        </form>
-
-        <form className="panel" onSubmit={handleQuick}>
-          <h4>Quick Register</h4>
-          <label>
-            Phone Number
-            <input
-              type="tel"
-              value={quickPhone}
-              onChange={(e) => setQuickPhone(e.target.value)}
-              placeholder="07XXXXXXXX"
-            />
-          </label>
-          <button className="btn ghost" type="submit">
-            Generate Account
-          </button>
-          <p className="muted small">
-            Creates a user with a random password and returns a token.
-          </p>
-        </form>
-      </div>
+    <section
+      className={`cta-card login-card${token ? ' is-authenticated' : ''}`}
+      id="auth"
+      role="button"
+      tabIndex={0}
+      onClick={() => setIsOpen(true)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          setIsOpen(true)
+        }
+      }}
+    >
+      <div className="cta-icon shield" aria-hidden="true" />
+      <h3>Login</h3>
+      <p>Access your account</p>
+      {token ? (
+        <button
+          className="btn ghost logout-btn"
+          onClick={(event) => {
+            event.stopPropagation()
+            onLogout()
+          }}
+          type="button"
+        >
+          Logout
+        </button>
+      ) : null}
       {authMessage ? <div className="notice">{authMessage}</div> : null}
+
+      {isOpen ? (
+        <div className="modal-backdrop" onClick={() => setIsOpen(false)}>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <p className="modal-title">Access Your Account</p>
+              </div>
+              <button className="modal-close" type="button" onClick={() => setIsOpen(false)}>
+                ×
+              </button>
+            </div>
+            <div className="modal-tabs" role="tablist" aria-label="Login methods">
+              <button className="tab active" type="button">
+                Username
+              </button>
+              <button className="tab" type="button">
+                Voucher
+              </button>
+              <button className="tab" type="button">
+                Receipt
+              </button>
+            </div>
+            <form className="modal-body" onSubmit={handleLogin}>
+              <label>
+                Username
+                <input
+                  type="tel"
+                  autoComplete="username"
+                  value={loginForm.phone_number}
+                  onChange={(e) =>
+                    setLoginForm((prev) => ({
+                      ...prev,
+                      phone_number: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter your username"
+                />
+              </label>
+              <label>
+                Password
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  value={loginForm.password}
+                  onChange={(e) =>
+                    setLoginForm((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter your password"
+                />
+              </label>
+              <button className="btn primary modal-submit" type="submit">
+                Login Now
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

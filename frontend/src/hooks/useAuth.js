@@ -15,6 +15,33 @@ export const useAuth = (apiFetch) => {
     }
   }, [token])
 
+  useEffect(() => {
+    let isMounted = true
+    const loadProfile = async () => {
+      if (!token) {
+        setUser(null)
+        return
+      }
+      try {
+        const data = await apiFetch('/me', { method: 'GET' })
+        if (isMounted) {
+          setUser(data.user || data)
+        }
+      } catch (error) {
+        if (isMounted) {
+          setUser(null)
+          setToken('')
+          setAuthMessage('Session expired. Please log in again.')
+        }
+      }
+    }
+
+    loadProfile()
+    return () => {
+      isMounted = false
+    }
+  }, [token, apiFetch])
+
   const handleAuthSuccess = (newToken, newUser) => {
     setToken(newToken)
     setUser(newUser || null)
