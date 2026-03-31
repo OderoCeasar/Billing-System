@@ -13,7 +13,7 @@ type PaymentStatus	string
 
 const (
 	PaymentStatusPending		PaymentStatus = "pending"
-	PaymentStatusComplete		PaymentStatus = "Completed"
+	PaymentStatusCompleted		PaymentStatus = "Completed"
 	PaymentStatusFailed 		PaymentStatus = "failed"
 	PaymentStatusCancelled		PaymentStatus = "cancelled"
 )
@@ -37,8 +37,8 @@ type Payment struct {
 	DeletedAt  		gorm.DeletedAt	`gotm:"index" json:"-"`
 
 
-	User	User			`gorm:"foreignKey:UserID" json:"user, omitempty"`
-	Package	Package			`gorm:"foreignKey:PackageID" json:"package, omitempty"`
+	User	User			`gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Package	Package			`gorm:"foreignKey:PackageID" json:"package,omitempty"`
 
 }
 
@@ -48,4 +48,8 @@ func (p *Payment) BeforeCreate(tx *gorm.DB) error {
 		p.ID = uuid.New()
 	}
 	return nil
+}
+
+func (Payment) TableName() string {
+	return "payments"
 }

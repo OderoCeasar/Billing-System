@@ -25,7 +25,7 @@ func (r *PaymentRepository) FindByID(id uuid.UUID) (*models.Payment, error) {
 	return &payment, err
 }
 
-func (r *PaymentRepository) FindByCheckouID(checkoutID uuid.UUID) (*models.Payment, error) {
+func (r *PaymentRepository) FindByCheckoutID(checkoutID string) (*models.Payment, error) {
 	var payment models.Payment
 	err := r.db.Preload("user").Preload("Package").Where("mpesa_checkout_id = ?", checkoutID).First(&payment).Error
 	return &payment, err
@@ -37,7 +37,7 @@ func (r *PaymentRepository) Update(payment *models.Payment) error {
 
 func (r *PaymentRepository) ListByUser(userID uuid.UUID, limit, offset int) ([]models.Payment, error) {
 	var payments []models.Payment
-	err := r.db.Preload("package").Where("user_id = ?", userID).Limit(limit).Offset(offset).Find(&payments).Error
+	err := r.db.Preload("package").Where("user_id = ?", userID).Order("creates_at DESC").Limit(limit).Offset(offset).Find(&payments).Error
 	return payments, err
 }
 
@@ -47,4 +47,14 @@ func (r *PaymentRepository) List(limit, offset int) ([]models.Payment, error) {
 	return payments, err
 }
 
+func (r *PaymentRepository) CountByStatus(status models.PaymentStatus) (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Payment{}).Where("status = ?", status).Count(&count).Error
+	return count, err
+}
 
+func (r *PaymentRepository) GetTotalRevenue() (float64, error) {
+	var total float64
+	err := r.db.Model(&models.Payment{}).Where("status = ?", models.PaymentStatusCompleted).Select("COALESCE(SUM(amount), 0)").Scan(&total).Error
+	return total, err
+}

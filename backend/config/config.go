@@ -4,13 +4,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/OderoCeasar/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 
 type Config struct {
 	Server		ServerConfig
-	database	DatabaseConfig
+	Database	DatabaseConfig
 	JWT			JWTConfig
 	Mpesa		MpesaConfig
 	RADIUS		RADIUSConfig

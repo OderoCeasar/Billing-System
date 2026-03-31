@@ -41,6 +41,16 @@ func (r *PackageRepository) ListActive() ([]models.Package, error) {
 
 func (r *PackageRepository) List() ([]models.Package, error) {
 	var packages []models.Package
-	err := r.db.Find(&packages).Error
+	err := r.db.Order("created_at DESC").Find(&packages).Error
 	return packages, err
+}
+
+func (r *PackageRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Package{}).Count(&count).Error
+	return count, err
+}
+
+func (r *PackageRepository) ToggleActive(id uuid.UUID) error {
+	return r.db.Model(&models.Package{}).Where("id = ?", id).Update("is_active", gorm.Expr("NOT is_active")).Error
 }

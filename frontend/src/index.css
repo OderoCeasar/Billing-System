@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --accent: #4688a6;
+  --accent-strong: #0c1721;
+  --heading: #10141a;
+  --text: #3b4250;
+  --muted: #64748b;
+  --bg: #f7f6f2;
+  --panel: #ffffff;
+  --border: #e3e6ec;
+  --shadow: 0 12px 32px rgba(12, 23, 33, 0.12);
+
+  --sans: 'Sora', system-ui, sans-serif;
+  --heading-font: 'Space Grotesk', system-ui, sans-serif;
+  --mono: 'Space Grotesk', ui-monospace, monospace;
+
+  font: 16px/1.6 var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.9), transparent 55%),
+    radial-gradient(circle at 80% 20%, rgba(248, 165, 90, 0.25), transparent 50%),
+    radial-gradient(circle at 10% 40%, rgba(70, 136, 166, 0.18), transparent 45%),
+    var(--bg);
+}
+
+#root {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--heading-font);
+  color: var(--heading);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0;
+}
+
+h2 {
+  font-size: clamp(26px, 3.5vw, 34px);
+  margin: 0;
+}
+
+h3 {
+  font-size: clamp(22px, 2.5vw, 28px);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
