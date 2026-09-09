@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/OderoCeasar/system/utils"
@@ -44,5 +45,5 @@ func CORSMiddleware(allowedOrigin string) gin.HandlerFunc {
 
 func sprintf(format string, args ...interface{}) string {
 	// helper function
-	return format
+	return fmt.Sprintf(format, args...)
 }

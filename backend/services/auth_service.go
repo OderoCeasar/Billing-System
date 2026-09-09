@@ -164,3 +164,6 @@ func (s *AuthService) QuickRegiter(phoneNumber string) (*models.User, string, er
 	return user, token, nil
 }
 
+func (s *AuthService) GetUserByID(id uuid.UUID) (*models.User, error) {
+	return s.userRepo.FindByID(id)
+}

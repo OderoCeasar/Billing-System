@@ -5,6 +5,7 @@ import (
 
 	"github.com/OderoCeasar/system/services"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 
@@ -101,8 +102,20 @@ func (h *AuthHandler) QuickRegister(c *gin.Context) {
 
 
 func (h *AuthHandler) Me(c *gin.Context) {
-	user, exists := c.Get("user")
+	userID, exists := c.Get("user_id")
 	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error":"unathourized"})
+		return
+	}
+
+	id, ok := userID.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error":"unathourized"})
+		return
+	}
+
+	user, err := h.authService.GetUserByID(id)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error":"unathourized"})
 		return
 	}
